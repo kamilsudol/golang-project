@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blockchain Messenger</title>
+</head>
+<body>
+<h1>Blockchain Messenger</h1>
+
+{{if .Message}}
+<p><strong>{{.Message}}</strong></p>
+{{end}}
+
+<form method="POST" action="/message">
+  <label>Sender:</label>
+  <input type="text" name="sender" value="{{.Sender}}" required><br><br>
+
+  <label>Receiver:</label>
+  <input type="text" name="receiver" value="{{.Receiver}}" required><br><br>
+
+  <label>Message:</label>
+  <input type="text" name="message" required><br><br>
+
+  <input type="submit" value="Send">
+</form>
+
+<h2>Blockchain</h2>
+
+{{range $index, $block := .Blockchain.Chain}}
+<div>
+  <h3>Block {{$block.Index}}</h3>
+  <p><strong>Timestamp:</strong> {{$block.Timestamp}}</p>
+  <p><strong>Transactions:</strong></p>
+  <ul>
+    {{range $transaction := $block.Transactions}}
+    <li>Sender: {{$transaction.Sender}}, Receiver: {{$transaction.Receiver}}, Message: {{$transaction.Message}}</li>
+    {{end}}
+  </ul>
+  <p><strong>Hash:</strong> {{$block.Hash}}</p>
+  <p><strong>Previous Hash:</strong> {{$block.PrevHash}}</p>
+</div>
+{{end}}
+
+<hr>
+
+<form method="POST" action="/validate">
+  <input type="submit" value="Validate Blockchain">
+</form>
+
+<form method="POST" action="/resolve">
+  <input type="submit" value="Resolve Conflicts">
+</form>
+
+</body>
+</html>
