@@ -13,27 +13,23 @@ import (
 
 // Represents a transaction in the blockchain
 type Transaction struct {
-	Sender   string `json:"sender"`
-	Receiver string `json:"receiver"`
-	Message  string `json:"message"`
+	Sender   string
+	Receiver string
+	Message  string
 }
 
 // Represents a block in the blockchain
 type Block struct {
-	Index        int           `json:"index"`
-	Timestamp    string        `json:"timestamp"`
-	Transactions []Transaction `json:"transactions"`
-	Hash         string        `json:"hash"`
-	PrevHash     string        `json:"prevHash"`
+	Index        int
+	Timestamp    string
+	Transactions []Transaction
+	Hash         string
+	PrevHash     string
 }
 
 // Represents the blockchain
 type Blockchain struct {
-	Chain               []Block `json:"chain"`
-	TransactionPool     []Transaction
-	ValidatedPool       []Transaction
-	TransactionID       int
-	ConflictResolutions int
+	Chain []Block
 }
 
 // Calculates the hash of a block
@@ -70,7 +66,7 @@ func handleMessage(w http.ResponseWriter, r *http.Request) {
 	message := r.FormValue("message")
 
 	if sender == "" || receiver == "" || message == "" {
-		renderMessengerPage(w, blockchain, "All fields are required", sender, receiver, 0)
+		renderMessengerPage(w, blockchain, "All fields are required", sender, receiver)
 		return
 	}
 
@@ -82,8 +78,8 @@ func handleMessage(w http.ResponseWriter, r *http.Request) {
 	log.Println("add new block, transaction: ", transaction)
 	log.Println("blockchain: ", blockchain)
 	blockchain.addBlock([]Transaction{transaction})
-	log.Println("end request, transaction pool: ", blockchain.TransactionPool)
-	renderMessengerPage(w, blockchain, "", "", "", 0)
+	log.Println("end request, transaction pool: ", transaction)
+	renderMessengerPage(w, blockchain, "", "", "")
 }
 
 // Handles the validation of the blockchain
@@ -97,10 +93,10 @@ func handleValidation(w http.ResponseWriter, r *http.Request) {
 
 	if isValid {
 		message := "Blockchain is valid."
-		renderMessengerPage(w, blockchain, message, "", "", 0)
+		renderMessengerPage(w, blockchain, message, "", "")
 	} else {
 		message := "Blockchain is not valid."
-		renderMessengerPage(w, blockchain, message, "", "", 0)
+		renderMessengerPage(w, blockchain, message, "", "")
 	}
 }
 
@@ -114,7 +110,7 @@ func HandleConflictResolution(w http.ResponseWriter, r *http.Request) {
 	blockchain.resolveConflicts()
 
 	message := "Conflict resolution completed."
-	renderMessengerPage(w, blockchain, message, "", "", 0)
+	renderMessengerPage(w, blockchain, message, "", "")
 }
 
 // Checks the validity of the blockchain
@@ -155,7 +151,7 @@ func (bc *Blockchain) resolveConflicts() {
 }
 
 // Renders the messenger page with the provided data
-func renderMessengerPage(w http.ResponseWriter, bc Blockchain, message string, sender string, receiver string, transactionID int) {
+func renderMessengerPage(w http.ResponseWriter, bc Blockchain, message string, sender string, receiver string) {
 	tmpl := template.Must(template.ParseFiles("messenger.html"))
 
 	blockData := make([]BlockData, len(bc.Chain))
@@ -170,11 +166,10 @@ func renderMessengerPage(w http.ResponseWriter, bc Blockchain, message string, s
 	}
 
 	data := MessengerPage{
-		Blockchain:    bc,
-		Message:       message,
-		Sender:        sender,
-		Receiver:      receiver,
-		TransactionID: transactionID,
+		Blockchain: bc,
+		Message:    message,
+		Sender:     sender,
+		Receiver:   receiver,
 	}
 
 	err := tmpl.Execute(w, data)
@@ -186,15 +181,14 @@ func renderMessengerPage(w http.ResponseWriter, bc Blockchain, message string, s
 
 // Function for the messenger page
 func messengerHandler(w http.ResponseWriter, r *http.Request) {
-	renderMessengerPage(w, blockchain, "", "", "", 0)
+	renderMessengerPage(w, blockchain, "", "", "")
 }
 
 type MessengerPage struct {
-	Blockchain    Blockchain
-	Message       string
-	Sender        string
-	Receiver      string
-	TransactionID int
+	Blockchain Blockchain
+	Message    string
+	Sender     string
+	Receiver   string
 }
 
 type BlockData struct {
@@ -230,10 +224,6 @@ func initializeBlockChain() {
 	genesisBlock.Hash = CalculateHash(genesisBlock.Index, genesisBlock.Timestamp, genesisBlock.Transactions, genesisBlock.PrevHash)
 
 	blockchain = Blockchain{
-		Chain:               []Block{genesisBlock},
-		TransactionPool:     []Transaction{},
-		ValidatedPool:       []Transaction{},
-		TransactionID:       1,
-		ConflictResolutions: 0,
+		Chain: []Block{genesisBlock},
 	}
 }
