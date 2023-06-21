@@ -17,10 +17,6 @@ func TestBlockchain_AddBlock(t *testing.T) {
 				PrevHash:     "",
 			},
 		},
-		TransactionPool:     []Transaction{},
-		ValidatedPool:       []Transaction{},
-		TransactionID:       1,
-		ConflictResolutions: 0,
 	}
 
 	transactions := []Transaction{
@@ -35,14 +31,14 @@ func TestBlockchain_AddBlock(t *testing.T) {
 	expectedChain := []Block{
 		{
 			Index:        0,
-			Timestamp:    "", 
+			Timestamp:    "",
 			Transactions: []Transaction{},
 			Hash:         "",
 			PrevHash:     "",
 		},
 		{
 			Index:        1,
-			Timestamp:    "", 
+			Timestamp:    "",
 			Transactions: transactions,
 			Hash:         "",
 			PrevHash:     "",
@@ -81,13 +77,9 @@ func TestBlockchain_Validate(t *testing.T) {
 					},
 				},
 				Hash:     "invalid_hash",
-				PrevHash: "",             
+				PrevHash: "",
 			},
 		},
-		TransactionPool:     []Transaction{},
-		ValidatedPool:       []Transaction{},
-		TransactionID:       1,
-		ConflictResolutions: 0,
 	}
 
 	isValid := invalidBlockchain.validate()
